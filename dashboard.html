@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OC Dialer — Dashboard</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --surface3: #252525;
+    --border: #2a2a2a;
+    --border2: #333;
+    --text: #e8e8e8;
+    --text2: #999;
+    --text3: #666;
+    --accent: #4f8ef7;
+    --accent-dim: #1e3a6e;
+    --green: #34d399;
+    --green-dim: #0d3326;
+    --yellow: #fbbf24;
+    --yellow-dim: #3b2a05;
+    --red: #f87171;
+    --red-dim: #3b0d0d;
+    --orange: #fb923c;
+    --orange-dim: #3b1a05;
+    --gray: #6b7280;
+    --gray-dim: #1f2123;
+    --radius: 8px;
+    --radius-lg: 12px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* LOADING */
+  #loading-screen {
+    display: flex; align-items: center; justify-content: center;
+    height: 100vh; flex-direction: column; gap: 16px;
+    color: var(--text3); font-size: 13px;
+  }
+  .spinner {
+    width: 24px; height: 24px;
+    border: 2px solid var(--border2); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* LAYOUT */
+  #app-screen { display: none; }
+
+  .topnav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .nav-logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-right: 8px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    color: var(--text2);
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: var(--radius);
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+
+  .nav-link:hover { background: var(--surface2); color: var(--text); }
+  .nav-link.active { color: var(--text); background: var(--surface2); }
+
+  .nav-spacer { flex: 1; }
+
+  .nav-user { font-size: 12px; color: var(--text3); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--radius); border: none;
+    cursor: pointer; font-size: 13px; font-weight: 500;
+    transition: all 0.15s; white-space: nowrap;
+    font-family: inherit; min-height: 36px;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #3b7de8; }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
+  .btn-danger { background: var(--red-dim); color: var(--red); border: 1px solid #5a2020; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; min-height: 30px; }
+
+  /* MAIN CONTENT */
+  .main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  /* ACTION BAR */
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+  }
+
+  @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 500px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .metric-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .metric-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .metric-label {
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 6px;
+  }
+
+  .metric-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  .metric-card.m-answered .metric-value { color: var(--green); }
+  .metric-card.m-callback .metric-value  { color: var(--accent); }
+  .metric-card.m-voicemail .metric-value { color: var(--yellow); }
+
+  /* METRICS TABS */
+  .metrics-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+
+  .mtab {
+    padding: 5px 12px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .mtab.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* SETTER TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 10px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--surface2); }
+
+  .td-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .td-green { color: var(--green); font-weight: 600; }
+  .td-accent { color: var(--accent); font-weight: 600; }
+  .td-yellow { color: var(--yellow); font-weight: 600; }
+
+  /* TWO-COL */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    background: var(--surface2);
+  }
+
+  .panel-body {
+    max-height: 360px;
+    overflow-y: auto;
+  }
+
+  .activity-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .activity-item:last-child { border-bottom: none; }
+
+  .activity-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .activity-biz {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .activity-time { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+  .activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .activity-setter { font-size: 12px; color: var(--text2); }
+  .activity-notes  { font-size: 12px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .outcome-pill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .pill-answered      { background: var(--green-dim); color: var(--green); }
+  .pill-voicemail     { background: var(--yellow-dim); color: var(--yellow); }
+  .pill-no-answer     { background: var(--gray-dim); color: var(--gray); }
+  .pill-not-interested{ background: var(--red-dim); color: var(--red); }
+  .pill-callback      { background: var(--accent-dim); color: var(--accent); }
+  .pill-gatekeeper    { background: var(--orange-dim); color: var(--orange); }
+
+  .callback-item {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .callback-item:last-child { border-bottom: none; }
+  .callback-biz  { font-size: 13px; font-weight: 500; color: var(--text); }
+  .callback-date { font-size: 12px; color: var(--accent); }
+  .callback-meta { font-size: 11px; color: var(--text3); }
+
+  .empty-panel {
+    padding: 32px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 13px;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .modal-lg { max-width: 720px; }
+
+  .modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .modal-title { font-size: 16px; font-weight: 700; }
+
+  .modal-close {
+    background: none; border: none;
+    color: var(--text2); font-size: 18px;
+    cursor: pointer; padding: 2px 6px;
+    border-radius: 4px; transition: all 0.15s;
+  }
+
+  .modal-close:hover { background: var(--surface2); color: var(--text); }
+
+  .modal-body { padding: 20px; overflow-y: auto; flex: 1; }
+
+  .modal-footer {
+    padding: 14px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 8px;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+
+  /* FORM FIELDS */
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  .field input, .field select, .field textarea {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 8px 12px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field select option { background: var(--surface2); }
+
+  /* DROP ZONE */
+  .drop-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface2);
+    margin-bottom: 14px;
+  }
+
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--accent);
+    background: var(--surface3);
+  }
+
+  .drop-zone input { display: none; }
+  .drop-icon { font-size: 28px; margin-bottom: 8px; }
+  .drop-text { font-size: 13px; color: var(--text2); }
+  .drop-text strong { color: var(--text); }
+
+  /* IMPORT RESULT */
+  .import-result {
+    display: none;
+    background: var(--surface2);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-size: 13px;
+    color: var(--text2);
+    margin-top: 12px;
+  }
+
+  .import-result.show { display: block; }
+
+  /* ASSIGN TABLE */
+  .assign-filters {
+    display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+  }
+
+  .assign-filters select, .assign-filters input {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 6px 10px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .assign-table-wrap {
+    max-height: 320px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 14px;
+  }
+
+  .assign-table { width: 100%; border-collapse: collapse; }
+
+  .assign-table th {
+    background: var(--surface2);
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text3);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 1;
+  }
+
+  .assign-table td {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .assign-table tr:last-child td { border-bottom: none; }
+  .assign-table tr:hover td { background: var(--surface2); }
+
+  .assign-select-all { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); cursor: pointer; }
+
+  .assign-footer {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+
+  .assign-footer select {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 7px 10px;
+    color: var(--text);
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+    flex: 1;
+    min-width: 160px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--surface3); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 10px 16px;
+    font-size: 13px; color: var(--text);
+    z-index: 9999; transform: translateY(20px); opacity: 0;
+    transition: all 0.25s; pointer-events: none;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <div>Loading dashboard…</div>
+</div>
+
+<div id="app-screen">
+
+  <!-- NAV -->
+  <nav class="topnav">
+    <div class="nav-logo">OC Dialer</div>
+    <a href="/dashboard.html" class="nav-link active">Dashboard</a>
+    <a href="/dialer.html" class="nav-link">Dialer</a>
+    <div class="nav-spacer"></div>
+    <span class="nav-user" id="nav-user"></span>
+    <button class="btn btn-ghost btn-sm" id="logout-btn">Sign out</button>
+  </nav>
+
+  <div class="main-content">
+
+    <!-- ACTION BAR -->
+    <div class="action-bar">
+      <button class="btn btn-primary" id="import-btn">+ Import Leads (CSV)</button>
+      <button class="btn btn-ghost" id="assign-btn">Assign Leads</button>
+    </div>
+
+    <!-- METRICS -->
+    <div>
+      <div class="metrics-tabs">
+        <button class="mtab active" data-period="today">Today</button>
+        <button class="mtab" data-period="week">This Week</button>
+      </div>
+      <div class="metrics-grid" id="metrics-grid">
+        <div class="metric-card"><div class="metric-value" id="m-dials">—</div><div class="metric-label">Dials</div></div>
+        <div class="metric-card m-answered"><div class="metric-value" id="m-answered">—</div><div class="metric-label">Answered</div></div>
+        <div class="metric-card m-voicemail"><div class="metric-value" id="m-voicemail">—</div><div class="metric-label">Voicemail</div></div>
+        <div class="metric-card m-callback"><div class="metric-value" id="m-callback">—</div><div class="metric-label">Callbacks</div></div>
+        <div class="metric-card"><div class="metric-value" id="m-noanswer">—</div><div class="metric-label">No Answer</div></div>
+        <div class="metric-card"><div class="metric-value" id="m-notint">—</div><div class="metric-label">Not Int.</div></div>
+      </div>
+    </div>
+
+    <!-- SETTER BREAKDOWN -->
+    <div>
+      <div class="section-header">
+        <div class="section-title">Setter Breakdown — <span id="breakdown-period-label">Today</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Setter</th>
+              <th class="td-num">Dials</th>
+              <th class="td-num">Answered</th>
+              <th class="td-num">Voicemail</th>
+              <th class="td-num">Callbacks</th>
+              <th class="td-num">Not Int.</th>
+            </tr>
+          </thead>
+          <tbody id="setter-table-body">
+            <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ACTIVITY + CALLBACKS -->
+    <div class="two-col">
+
+      <div class="panel">
+        <div class="panel-header">Recent Activity (last 30 calls)</div>
+        <div class="panel-body" id="activity-feed">
+          <div class="empty-panel">Loading…</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">Upcoming Callbacks</div>
+        <div class="panel-body" id="callbacks-list">
+          <div class="empty-panel">Loading…</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── IMPORT MODAL ─────────────────────────────── -->
+<div class="modal-overlay" id="import-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Import Leads (CSV)</div>
+      <button class="modal-close" data-close="import-modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="drop-zone" id="import-drop-zone">
+        <div class="drop-icon">📋</div>
+        <div class="drop-text"><strong>Drop your CSV here</strong> or click to browse</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:6px">Columns: Business Name, Phone, City, Website, Contact Name</div>
+        <input type="file" id="import-file-input" accept=".csv">
+      </div>
+
+      <div class="field">
+        <label>List Name</label>
+        <input type="text" id="import-list-name" placeholder="e.g. OC Landscapers - Batch 2">
+      </div>
+
+      <div class="field">
+        <label>Assign to Setter (optional)</label>
+        <select id="import-setter-select">
+          <option value="">— Unassigned —</option>
+        </select>
+      </div>
+
+      <div class="import-result" id="import-result"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close="import-modal">Cancel</button>
+      <button class="btn btn-primary" id="import-confirm-btn" disabled>Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── ASSIGN MODAL ─────────────────────────────── -->
+<div class="modal-overlay" id="assign-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title">Assign Leads</div>
+      <button class="modal-close" data-close="assign-modal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="assign-filters">
+        <input type="text" id="assign-search" placeholder="Search…" style="width:160px">
+        <select id="assign-list-filter">
+          <option value="">All lists</option>
+        </select>
+        <select id="assign-status-filter">
+          <option value="">All statuses</option>
+          <option value="new">Not Called</option>
+          <option value="callback">Callback</option>
+          <option value="answered">Answered</option>
+          <option value="voicemail">Voicemail</option>
+        </select>
+        <label class="assign-select-all">
+          <input type="checkbox" id="assign-check-all"> Select all
+        </label>
+      </div>
+
+      <div class="assign-table-wrap">
+        <table class="assign-table">
+          <thead>
+            <tr>
+              <th style="width:32px"></th>
+              <th>Business</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>List</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="assign-table-body">
+            <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="assign-footer">
+        <span id="assign-selected-count" style="font-size:13px;color:var(--text2)">0 selected</span>
+        <select id="assign-setter-select">
+          <option value="">— Pick a setter —</option>
+        </select>
+        <button class="btn btn-primary" id="assign-confirm-btn">Assign Selected</button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close="assign-modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script>
+const sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_KEY);
+
+let currentUser = null;
+let currentMeta = null;
+let allLogs = [];       // call_logs for current period
+let allSetters = [];    // users_meta where role = setter
+let allLeads = [];      // all leads (for assign modal)
+let currentPeriod = 'today';
+let importParsed = null;
+let assignLeadsFiltered = [];
+
+// ─────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = '/index.html'; return; }
+  currentUser = session.user;
+
+  const { data: meta } = await sb.from('users_meta').select('role,display_name,email').eq('id', currentUser.id).single();
+  if (!meta || meta.role !== 'admin') { window.location.href = '/dialer.html'; return; }
+  currentMeta = meta;
+
+  document.getElementById('nav-user').textContent = meta.display_name || meta.email;
+
+  await Promise.all([loadSetters(), loadDashboard()]);
+
+  document.getElementById('loading-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+})();
+
+// ─────────────────────────────────────────────
+// LOAD SETTERS
+// ─────────────────────────────────────────────
+async function loadSetters() {
+  const { data } = await sb.from('users_meta').select('id,display_name,email,role').order('display_name');
+  allSetters = data || [];
+
+  // Populate setter dropdowns
+  const setterOptions = allSetters.map(s => `<option value="${s.id}">${esc(s.display_name || s.email)}</option>`).join('');
+  document.getElementById('import-setter-select').innerHTML = '<option value="">— Unassigned —</option>' + setterOptions;
+  document.getElementById('assign-setter-select').innerHTML = '<option value="">— Pick a setter —</option>' + setterOptions;
+}
+
+// ─────────────────────────────────────────────
+// LOAD DASHBOARD DATA
+// ─────────────────────────────────────────────
+async function loadDashboard() {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  const weekDay = now.getDay();
+  const weekStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - weekDay).toISOString();
+
+  const rangeStart = currentPeriod === 'today' ? todayStart : weekStart;
+
+  const [logsRes, callbacksRes, recentRes] = await Promise.all([
+    sb.from('call_logs').select('outcome, user_id, called_at').gte('called_at', rangeStart),
+    sb.from('leads').select('id, business_name, contact_name, phone, city, next_followup_date, assigned_to, list_name')
+      .eq('status', 'callback').order('next_followup_date', { ascending: true }).limit(25),
+    sb.from('call_logs').select('id, outcome, notes, called_at, user_id, lead_id').order('called_at', { ascending: false }).limit(30),
+  ]);
+
+  allLogs = logsRes.data || [];
+  renderMetrics(allLogs);
+  renderSetterTable(allLogs);
+  renderCallbacks(callbacksRes.data || []);
+  await renderActivity(recentRes.data || []);
+}
+
+// ─────────────────────────────────────────────
+// METRICS
+// ─────────────────────────────────────────────
+function renderMetrics(logs) {
+  const counts = { answered:0, voicemail:0, 'no-answer':0, 'not-interested':0, callback:0, gatekeeper:0 };
+  logs.forEach(l => { counts[l.outcome] = (counts[l.outcome] || 0) + 1; });
+
+  document.getElementById('m-dials').textContent     = logs.length;
+  document.getElementById('m-answered').textContent  = counts['answered'];
+  document.getElementById('m-voicemail').textContent = counts['voicemail'];
+  document.getElementById('m-callback').textContent  = counts['callback'];
+  document.getElementById('m-noanswer').textContent  = counts['no-answer'];
+  document.getElementById('m-notint').textContent    = counts['not-interested'];
+}
+
+// ─────────────────────────────────────────────
+// SETTER TABLE
+// ─────────────────────────────────────────────
+function renderSetterTable(logs) {
+  const byUser = {};
+  logs.forEach(l => {
+    if (!byUser[l.user_id]) byUser[l.user_id] = { answered:0, voicemail:0, 'no-answer':0, 'not-interested':0, callback:0, total:0 };
+    byUser[l.user_id][l.outcome] = (byUser[l.user_id][l.outcome] || 0) + 1;
+    byUser[l.user_id].total++;
+  });
+
+  const tbody = document.getElementById('setter-table-body');
+  const userIds = Object.keys(byUser);
+
+  if (!userIds.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">No calls logged yet</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = userIds.map(uid => {
+    const setter = allSetters.find(s => s.id === uid);
+    const name = setter ? (setter.display_name || setter.email) : uid.slice(0,8) + '…';
+    const d = byUser[uid];
+    return `<tr>
+      <td>${esc(name)}</td>
+      <td class="td-num">${d.total}</td>
+      <td class="td-num td-green">${d.answered || 0}</td>
+      <td class="td-num td-yellow">${d.voicemail || 0}</td>
+      <td class="td-num td-accent">${d.callback || 0}</td>
+      <td class="td-num">${d['not-interested'] || 0}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// ACTIVITY FEED
+// ─────────────────────────────────────────────
+async function renderActivity(logs) {
+  const feed = document.getElementById('activity-feed');
+  if (!logs.length) { feed.innerHTML = '<div class="empty-panel">No calls logged yet</div>'; return; }
+
+  // Batch-fetch lead names
+  const leadIds = [...new Set(logs.map(l => l.lead_id))];
+  const { data: leads } = await sb.from('leads').select('id, business_name').in('id', leadIds);
+  const leadsMap = Object.fromEntries((leads || []).map(l => [l.id, l.business_name]));
+
+  const outcomeLabels = {
+    'answered':'Answered','voicemail':'Voicemail','no-answer':'No Answer',
+    'not-interested':'Not Int.','callback':'Callback','gatekeeper':'Gatekeeper'
+  };
+
+  feed.innerHTML = logs.map(l => {
+    const setter = allSetters.find(s => s.id === l.user_id);
+    const setterName = setter ? (setter.display_name || setter.email) : 'Unknown';
+    const biz = leadsMap[l.lead_id] || 'Unknown';
+    const pillClass = 'pill-' + l.outcome;
+    return `<div class="activity-item">
+      <div class="activity-top">
+        <div class="activity-biz">${esc(biz)}</div>
+        <div class="activity-time">${timeAgo(l.called_at)}</div>
+      </div>
+      <div class="activity-meta">
+        <span class="outcome-pill ${pillClass}">${outcomeLabels[l.outcome] || l.outcome}</span>
+        <span class="activity-setter">${esc(setterName)}</span>
+        ${l.notes ? `<span class="activity-notes">${esc(l.notes)}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// CALLBACKS
+// ─────────────────────────────────────────────
+function renderCallbacks(callbacks) {
+  const el = document.getElementById('callbacks-list');
+  if (!callbacks.length) { el.innerHTML = '<div class="empty-panel">No callbacks scheduled</div>'; return; }
+
+  el.innerHTML = callbacks.map(l => {
+    const setter = allSetters.find(s => s.id === l.assigned_to);
+    const setterName = setter ? (setter.display_name || setter.email) : null;
+    return `<div class="callback-item">
+      <div class="callback-biz">${esc(l.business_name)}</div>
+      ${l.next_followup_date ? `<div class="callback-date">📅 ${formatDate(l.next_followup_date)}</div>` : ''}
+      <div class="callback-meta">${l.phone || ''}${setterName ? ' · ' + esc(setterName) : ''}${l.city ? ' · ' + esc(l.city) : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// METRICS TABS
+// ─────────────────────────────────────────────
+document.querySelectorAll('.mtab').forEach(tab => {
+  tab.addEventListener('click', async () => {
+    document.querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentPeriod = tab.dataset.period;
+    document.getElementById('breakdown-period-label').textContent = currentPeriod === 'today' ? 'Today' : 'This Week';
+    await loadDashboard();
+  });
+});
+
+// ─────────────────────────────────────────────
+// IMPORT MODAL
+// ─────────────────────────────────────────────
+document.getElementById('import-btn').addEventListener('click', () => openModal('import-modal'));
+
+const dropZone = document.getElementById('import-drop-zone');
+const fileInput = document.getElementById('import-file-input');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleImportFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', e => handleImportFile(e.target.files[0]));
+
+function handleImportFile(file) {
+  if (!file) return;
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      importParsed = results.data;
+      const resultEl = document.getElementById('import-result');
+      resultEl.textContent = `✓ ${importParsed.length} rows parsed from "${file.name}"`;
+      resultEl.classList.add('show');
+      dropZone.querySelector('.drop-text').innerHTML = `<strong>${esc(file.name)}</strong> — ${importParsed.length} rows`;
+      document.getElementById('import-confirm-btn').disabled = false;
+    },
+    error: () => showToast('Error parsing CSV')
+  });
+}
+
+function normalizePhone(p) {
+  if (!p) return null;
+  const digits = p.replace(/[^\d]/g, '');
+  if (digits.length === 10) return '+1' + digits;
+  if (digits.length === 11 && digits.startsWith('1')) return '+' + digits;
+  return digits ? '+' + digits : null;
+}
+
+function findCol(row, ...candidates) {
+  const keys = Object.keys(row);
+  for (const c of candidates) {
+    const match = keys.find(k => k.toLowerCase().trim() === c.toLowerCase());
+    if (match !== undefined) return row[match] || '';
+  }
+  return '';
+}
+
+document.getElementById('import-confirm-btn').addEventListener('click', async () => {
+  if (!importParsed) return;
+  const listName = document.getElementById('import-list-name').value.trim() || 'Imported Leads';
+  const assignTo = document.getElementById('import-setter-select').value || null;
+  const btn = document.getElementById('import-confirm-btn');
+
+  btn.disabled = true;
+  btn.textContent = 'Importing…';
+
+  const rows = importParsed.map(row => ({
+    business_name: findCol(row, 'business name', 'business_name', 'company', 'company name', 'name') || 'Unknown',
+    contact_name:  findCol(row, 'contact name', 'contact_name', 'contact', 'owner', 'first name') || null,
+    phone:         normalizePhone(findCol(row, 'phone', 'phone number', 'telephone', 'mobile', 'cell')),
+    city:          findCol(row, 'city', 'location', 'area') || null,
+    website:       findCol(row, 'website', 'url', 'web', 'site') || null,
+    status:        'new',
+    list_name:     listName,
+    assigned_to:   assignTo,
+  })).filter(r => r.business_name && r.business_name !== 'Unknown');
+
+  // Insert in batches of 50
+  let inserted = 0;
+  let errors = 0;
+  for (let i = 0; i < rows.length; i += 50) {
+    const batch = rows.slice(i, i + 50);
+    const { error } = await sb.from('leads').insert(batch);
+    if (error) { errors += batch.length; console.error(error); }
+    else inserted += batch.length;
+  }
+
+  const resultEl = document.getElementById('import-result');
+  resultEl.textContent = `✓ Imported ${inserted} leads into "${listName}"${errors ? `. ${errors} failed.` : ''}`;
+  resultEl.classList.add('show');
+
+  btn.textContent = 'Import';
+  btn.disabled = false;
+  importParsed = null;
+  fileInput.value = '';
+  dropZone.querySelector('.drop-text').innerHTML = '<strong>Drop your CSV here</strong> or click to browse';
+
+  showToast(`Imported ${inserted} leads`);
+  await loadDashboard();
+});
+
+// ─────────────────────────────────────────────
+// ASSIGN MODAL
+// ─────────────────────────────────────────────
+document.getElementById('assign-btn').addEventListener('click', async () => {
+  openModal('assign-modal');
+  await loadAssignLeads();
+});
+
+async function loadAssignLeads() {
+  const tbody = document.getElementById('assign-table-body');
+  tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">Loading…</td></tr>';
+
+  const { data } = await sb.from('leads').select('id, business_name, phone, city, list_name, status, assigned_to').order('created_at', { ascending: true });
+  allLeads = data || [];
+
+  // Populate list filter
+  const lists = [...new Set(allLeads.map(l => l.list_name).filter(Boolean))];
+  const listFilter = document.getElementById('assign-list-filter');
+  listFilter.innerHTML = '<option value="">All lists</option>' + lists.map(l => `<option value="${esc(l)}">${esc(l)}</option>`).join('');
+
+  renderAssignTable();
+}
+
+function getAssignFiltered() {
+  const q = document.getElementById('assign-search').value.toLowerCase();
+  const list = document.getElementById('assign-list-filter').value;
+  const status = document.getElementById('assign-status-filter').value;
+
+  return allLeads.filter(l => {
+    const matchQ = !q || (l.business_name || '').toLowerCase().includes(q) || (l.phone || '').includes(q);
+    const matchList = !list || l.list_name === list;
+    const matchStatus = !status || l.status === status;
+    return matchQ && matchList && matchStatus;
+  });
+}
+
+function renderAssignTable() {
+  assignLeadsFiltered = getAssignFiltered();
+  const tbody = document.getElementById('assign-table-body');
+
+  if (!assignLeadsFiltered.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px">No leads match filters</td></tr>';
+    return;
+  }
+
+  const statusLabels = { new:'Not Called', answered:'Answered', voicemail:'Voicemail', 'no-answer':'No Answer', 'not-interested':'Not Int.', callback:'Callback', gatekeeper:'Gatekeeper' };
+
+  tbody.innerHTML = assignLeadsFiltered.map(l => {
+    const assignedSetter = allSetters.find(s => s.id === l.assigned_to);
+    const assignedLabel = assignedSetter ? `<span style="font-size:11px;color:var(--accent)">${esc(assignedSetter.display_name || assignedSetter.email)}</span>` : '';
+    return `<tr>
+      <td><input type="checkbox" class="assign-row-check" data-id="${l.id}"></td>
+      <td>${esc(l.business_name || '—')} ${assignedLabel}</td>
+      <td style="font-size:12px;color:var(--text2)">${esc(l.phone || '—')}</td>
+      <td style="font-size:12px;color:var(--text2)">${esc(l.city || '—')}</td>
+      <td style="font-size:12px;color:var(--text3)">${esc(l.list_name || '—')}</td>
+      <td style="font-size:12px;color:var(--text2)">${statusLabels[l.status] || l.status}</td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.assign-row-check').forEach(cb => {
+    cb.addEventListener('change', updateAssignCount);
+  });
+}
+
+function updateAssignCount() {
+  const checked = document.querySelectorAll('.assign-row-check:checked').length;
+  document.getElementById('assign-selected-count').textContent = `${checked} selected`;
+}
+
+document.getElementById('assign-check-all').addEventListener('change', e => {
+  document.querySelectorAll('.assign-row-check').forEach(cb => { cb.checked = e.target.checked; });
+  updateAssignCount();
+});
+
+['assign-search','assign-list-filter','assign-status-filter'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderAssignTable);
+  document.getElementById(id).addEventListener('change', renderAssignTable);
+});
+
+document.getElementById('assign-confirm-btn').addEventListener('click', async () => {
+  const setterId = document.getElementById('assign-setter-select').value;
+  if (!setterId) { showToast('Pick a setter first'); return; }
+
+  const checked = [...document.querySelectorAll('.assign-row-check:checked')].map(cb => cb.dataset.id);
+  if (!checked.length) { showToast('Select at least one lead'); return; }
+
+  const btn = document.getElementById('assign-confirm-btn');
+  btn.disabled = true;
+  btn.textContent = 'Assigning…';
+
+  const { error } = await sb.from('leads').update({ assigned_to: setterId }).in('id', checked);
+
+  if (error) {
+    showToast('Error: ' + error.message);
+  } else {
+    showToast(`Assigned ${checked.length} leads`);
+    await loadAssignLeads();
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Assign Selected';
+  document.getElementById('assign-check-all').checked = false;
+  updateAssignCount();
+});
+
+// ─────────────────────────────────────────────
+// MODAL HELPERS
+// ─────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('[data-close]').forEach(btn => {
+  btn.addEventListener('click', () => closeModal(btn.dataset.close));
+});
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ─────────────────────────────────────────────
+// LOGOUT
+// ─────────────────────────────────────────────
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  window.location.href = '/index.html';
+});
+
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  try { return new Date(iso).toLocaleDateString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }); }
+  catch { return iso; }
+}
+
+function timeAgo(iso) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return formatDate(iso);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

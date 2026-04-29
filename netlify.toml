@@ -1,0 +1,8 @@
+[build]
+  command = "sh build.sh"
+  publish = "."
+
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200
