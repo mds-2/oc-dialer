@@ -724,6 +724,447 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ── SCRIPT PANEL ─────────────────────────────── */
+  .script-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .sp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface2);
+    gap: 10px;
+    min-height: 48px;
+  }
+
+  .sp-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+    user-select: none;
+  }
+
+  .sp-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .sp-selector {
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    padding: 3px 8px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    font-family: inherit;
+    cursor: pointer;
+    max-width: 200px;
+  }
+
+  .sp-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .sp-vm-btn {
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    padding: 4px 10px;
+    color: var(--text2);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .sp-vm-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--accent); }
+  .sp-vm-btn.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
+
+  .sp-chevron {
+    font-size: 10px;
+    color: var(--text3);
+    transition: transform 0.2s;
+    cursor: pointer;
+  }
+
+  .sp-chevron.open { transform: rotate(180deg); }
+
+  /* Script body */
+  .sp-body { display: none; border-top: 1px solid var(--border); }
+  .sp-body.open { display: block; }
+
+  /* Voicemail strip */
+  .sp-vm-strip {
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    padding: 14px 16px;
+  }
+
+  .sp-vm-strip-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .sp-vm-title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    flex: 1;
+  }
+
+  .sp-copy-sm {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+
+  .sp-copy-sm:hover { border-color: var(--accent); color: var(--accent); }
+  .sp-copy-sm.copied { border-color: var(--green); color: var(--green); }
+
+  .sp-close-vm {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 2px 4px;
+    line-height: 1;
+  }
+
+  .sp-vm-text {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    font-style: italic;
+    white-space: pre-wrap;
+    margin-bottom: 12px;
+  }
+
+  .sp-dns-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+
+  .sp-dns-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .sp-dns-chip {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: var(--red-dim);
+    color: var(--red);
+    border-radius: 3px;
+    border: 1px solid #5a1a1a;
+  }
+
+  /* Two-column layout */
+  .sp-two-col {
+    display: flex;
+    min-height: 360px;
+    max-height: 560px;
+  }
+
+  .sp-sections-col {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    min-width: 0;
+  }
+
+  .sp-sections-col::-webkit-scrollbar { width: 4px; }
+  .sp-sections-col::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .sp-obj-col {
+    width: 268px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sp-obj-col-head {
+    padding: 10px 12px 8px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .sp-obj-col-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 7px;
+  }
+
+  .sp-obj-search {
+    width: 100%;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    border-radius: 5px;
+    padding: 5px 9px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .sp-obj-search:focus { border-color: var(--accent); }
+  .sp-obj-search::placeholder { color: var(--text3); }
+
+  .sp-obj-list {
+    overflow-y: auto;
+    flex: 1;
+    padding: 8px;
+  }
+
+  .sp-obj-list::-webkit-scrollbar { width: 4px; }
+  .sp-obj-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .sp-obj-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 9px 11px;
+    margin-bottom: 6px;
+    background: var(--surface2);
+    transition: border-color 0.15s;
+  }
+
+  .sp-obj-card:hover { border-color: var(--border2); background: var(--surface3); }
+
+  .sp-obj-q {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+
+  .sp-obj-a {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .sp-obj-copy {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--surface);
+    color: var(--text3);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    min-height: 26px;
+  }
+
+  .sp-obj-copy:hover { border-color: var(--accent); color: var(--accent); }
+  .sp-obj-copy.copied { border-color: var(--green); color: var(--green); }
+
+  .sp-obj-empty {
+    text-align: center;
+    padding: 24px 12px;
+    color: var(--text3);
+    font-size: 12px;
+  }
+
+  /* Script sections */
+  .sp-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .sp-section-header {
+    width: 100%;
+    background: var(--surface2);
+    border: none;
+    padding: 9px 13px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+    text-align: left;
+    gap: 10px;
+    min-height: 44px;
+  }
+
+  .sp-section-header:hover { background: var(--surface3); }
+
+  .sp-section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+
+  .sp-section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sp-section-dur {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    color: var(--text3);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .sp-section-chev {
+    font-size: 9px;
+    color: var(--text3);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+
+  .sp-section-chev.open { transform: rotate(90deg); }
+
+  .sp-section-body {
+    display: none;
+    padding: 13px 14px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+
+  .sp-section-body.open { display: block; }
+
+  .sp-section-script {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--text2);
+    white-space: pre-wrap;
+    font-family: inherit;
+  }
+
+  /* Bracketed placeholders */
+  .placeholder {
+    background: rgba(251, 191, 36, 0.18);
+    color: var(--yellow);
+    border-radius: 3px;
+    padding: 0 3px;
+    font-weight: 600;
+  }
+
+  .sp-section-notes {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text3);
+    background: var(--surface2);
+    border-left: 2px solid var(--accent-dim);
+    padding: 7px 10px;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Hooks */
+  .sp-hooks {
+    margin-top: 12px;
+  }
+
+  .sp-hooks-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 7px;
+  }
+
+  .sp-hooks-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .hook-chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border2);
+    background: var(--surface2);
+    color: var(--text2);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    min-height: 30px;
+  }
+
+  .hook-chip:hover { border-color: var(--accent); color: var(--accent); }
+  .hook-chip.active { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-dim); }
+
+  .sp-hook-active-line {
+    font-size: 12px;
+    color: var(--yellow);
+    background: var(--yellow-dim);
+    border-radius: var(--radius);
+    padding: 7px 11px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* Stacked layout for iPad portrait / mobile */
+  @media (max-width: 900px) {
+    .sp-two-col { flex-direction: column; max-height: none; min-height: unset; }
+    .sp-sections-col { max-height: 380px; }
+    .sp-obj-col {
+      width: 100%;
+      border-left: none;
+      border-top: 1px solid var(--border);
+      max-height: 280px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -881,59 +1322,58 @@
             </div>
           </div>
 
-          <div class="script-panel">
-            <button class="script-toggle" id="script-toggle">
-              <span>📜 Call Scripts</span>
-              <span class="script-toggle-icon" id="script-toggle-icon">▼</span>
-            </button>
-            <div class="script-content" id="script-content">
-              <div class="script-tabs">
-                <button class="script-tab active" data-tab="dm">Decision Maker</button>
-                <button class="script-tab" data-tab="gatekeeper">Gatekeeper</button>
-                <button class="script-tab" data-tab="voicemail">Voicemail</button>
+          <div class="script-panel" id="script-panel">
+
+            <!-- Header -->
+            <div class="sp-header">
+              <div class="sp-header-left" id="sp-toggle">
+                <span>📜</span>
+                <span class="sp-label">Call Scripts</span>
+                <select class="sp-selector" id="sp-selector" onclick="event.stopPropagation()">
+                  <!-- populated by JS from SCRIPTS array -->
+                </select>
               </div>
-              <div class="script-body">
-                <div class="script-pane active" id="tab-dm">
-                  <div class="script-text">
-                    <p><strong>Opening (first 5 seconds):</strong></p>
-                    <p>"Hey, is this <span class="highlight">[Owner Name]</span>? … Hey [Name], this is [Your Name] — I'm actually calling because <strong>I already built you a website</strong>. I was working on a few landscaping companies out here in Orange County and I went ahead and put one together for you — I just wanted to show you what it looks like."</p>
-                    <p><strong>If they ask "who is this / what company?":</strong></p>
-                    <p>"Yeah, my name's [Name], I'm a web designer — I wasn't sure if you'd seen it yet so I wanted to reach out before I moved on to the next company. Can I send you the link real quick?"</p>
-                    <p><strong>If interested:</strong></p>
-                    <p>"Perfect. So I built it to actually convert — not just look nice. It's got your services, a contact form, click-to-call, and it's optimized for people searching 'landscaper near me' in OC. I can walk you through it on a quick 15-minute call — when's a good time this week?"</p>
-                    <p><strong>Common objection — <span class="objection">"I already have a website"</span>:</strong></p>
-                    <p>"Totally, most companies do — but a lot of them aren't actually bringing in leads. This one is built specifically to convert OC homeowners searching for landscapers. Can I just send you the link so you can compare? Takes 30 seconds."</p>
-                    <p><strong>Common objection — <span class="objection">"How much does it cost?"</span>:</strong></p>
-                    <p>"I don't charge until we actually talk and you love it. Let me send you the link first — if it's not better than what you have, you just say no and we both move on. Fair?"</p>
-                    <p><strong>Close:</strong></p>
-                    <p>"I'll shoot you the link right now — what's the best email? And if you want to hop on a call, I'm open [Tuesday / Thursday] this week."</p>
-                  </div>
-                </div>
-                <div class="script-pane" id="tab-gatekeeper">
-                  <div class="script-text">
-                    <p><strong>When someone else answers:</strong></p>
-                    <p>"Hey, is [Owner Name] around? … Actually, I'm a web designer — I put together a site for [Company Name] and I wanted to get their eyes on it before I moved on. Who handles that stuff there?"</p>
-                    <p><strong>If gatekeeper pushes back:</strong></p>
-                    <p>"Totally understand — I'm not selling anything yet, I literally built something and I just want to show it to whoever makes those decisions. Is there a better time to catch [Name]?"</p>
-                    <p><strong>Get the owner's direct number:</strong></p>
-                    <p>"What's the best number to reach them on? Or an email? I'll keep it short, I promise — it's just a link."</p>
-                    <p><strong>If they won't transfer:</strong></p>
-                    <p>"No worries — what's your name? I'll follow up with you. Can I get your email and I'll send over what I built? You can pass it along when you get a chance."</p>
-                  </div>
-                </div>
-                <div class="script-pane" id="tab-voicemail">
-                  <div class="script-text">
-                    <p><strong>Voicemail script (keep it under 25 seconds):</strong></p>
-                    <p>"Hey [Owner Name], this is [Your Name] — I'm a web designer and I actually built a website for <strong>[Company Name]</strong>. I was doing a few landscaping companies out in OC and I went ahead and put one together for you. I just want to send you the link — give me a call back at [Your Number] or I'll try you again. Talk soon."</p>
-                    <p style="margin-top:16px"><strong>Key rules:</strong></p>
-                    <p>• Never say "I'm calling about a website" — say you <em>already built one</em><br>
-                    • Speak at normal pace, sound casual — not scripted<br>
-                    • Leave your number clearly, once<br>
-                    • Never leave more than 2 voicemails per prospect</p>
-                  </div>
-                </div>
+              <div class="sp-header-right">
+                <button class="sp-vm-btn" id="sp-vm-btn">Voicemail</button>
+                <span class="sp-chevron" id="sp-chevron">▼</span>
               </div>
             </div>
+
+            <!-- Body -->
+            <div class="sp-body" id="sp-body">
+
+              <!-- Voicemail strip (hidden until button clicked) -->
+              <div class="sp-vm-strip" id="sp-vm-strip" style="display:none">
+                <div class="sp-vm-strip-header">
+                  <span class="sp-vm-title">Voicemail Script</span>
+                  <button class="sp-copy-sm" id="sp-vm-copy">Copy</button>
+                  <button class="sp-close-vm" id="sp-close-vm">✕</button>
+                </div>
+                <div class="sp-vm-text" id="sp-vm-text"></div>
+                <div class="sp-dns-label">Don't say on this call:</div>
+                <div class="sp-dns-chips" id="sp-dns-chips"></div>
+              </div>
+
+              <!-- Two-column: sections | objections -->
+              <div class="sp-two-col">
+
+                <div class="sp-sections-col" id="sp-sections-col">
+                  <!-- section cards rendered by JS -->
+                </div>
+
+                <div class="sp-obj-col">
+                  <div class="sp-obj-col-head">
+                    <div class="sp-obj-col-title">Objections</div>
+                    <input class="sp-obj-search" id="sp-obj-search" type="text" placeholder="Search objections…">
+                  </div>
+                  <div class="sp-obj-list" id="sp-obj-list">
+                    <!-- objection cards rendered by JS -->
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
           </div>
 
         </div>
@@ -945,6 +1385,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="/config.js"></script>
+<script src="/scripts.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ─────────────────────────────────────────────
@@ -1375,21 +1816,224 @@ document.getElementById('export-callbacks-btn').addEventListener('click', () => 
 // ─────────────────────────────────────────────
 // SCRIPT PANEL
 // ─────────────────────────────────────────────
-document.getElementById('script-toggle').addEventListener('click', () => {
-  const content = document.getElementById('script-content');
-  const icon = document.getElementById('script-toggle-icon');
-  const open = content.classList.toggle('open');
-  icon.classList.toggle('open', open);
+let spOpen = false;
+let spScriptIdx = 0;
+let spSectionState = {};  // { sectionId: bool } — true = expanded
+let spActiveHooks = {};   // { sectionId: hookLine }
+let spVmVisible = false;
+
+function initScriptPanel() {
+  const selector = document.getElementById('sp-selector');
+  selector.innerHTML = SCRIPTS.map((s, i) =>
+    `<option value="${i}">${escAttr(s.name)}</option>`
+  ).join('');
+  selector.addEventListener('change', e => {
+    spScriptIdx = parseInt(e.target.value);
+    spSectionState = {};
+    spActiveHooks = {};
+    spVmVisible = false;
+    document.getElementById('sp-vm-strip').style.display = 'none';
+    document.getElementById('sp-vm-btn').classList.remove('active');
+    renderScriptPanel();
+  });
+  renderScriptPanel();
+}
+
+function renderScriptPanel() {
+  const script = SCRIPTS[spScriptIdx];
+  if (!script) return;
+
+  // Default: opener expanded, rest collapsed
+  script.sections.forEach((s, i) => {
+    if (!(s.id in spSectionState)) spSectionState[s.id] = (i === 0);
+  });
+
+  renderSections(script);
+  renderObjections(script, '');
+  renderVoicemail(script);
+}
+
+function renderSections(script) {
+  const col = document.getElementById('sp-sections-col');
+  col.innerHTML = script.sections.map(s => buildSectionHTML(s)).join('');
+
+  // Section toggle
+  col.querySelectorAll('.sp-section-header').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.sid;
+      spSectionState[id] = !spSectionState[id];
+      const body = col.querySelector(`.sp-section-body[data-sid="${id}"]`);
+      const chev = btn.querySelector('.sp-section-chev');
+      body.classList.toggle('open', spSectionState[id]);
+      chev.classList.toggle('open', spSectionState[id]);
+    });
+  });
+
+  // Hook chips
+  col.querySelectorAll('.hook-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const sid = chip.dataset.sid;
+      const line = chip.dataset.line;
+      spActiveHooks[sid] = (spActiveHooks[sid] === line) ? null : line;
+      // Re-render just sections (not objections)
+      renderSections(SCRIPTS[spScriptIdx]);
+    });
+  });
+}
+
+function buildSectionHTML(s) {
+  const expanded = !!spSectionState[s.id];
+  const activeHook = spActiveHooks[s.id] || null;
+
+  let scriptText = s.script || '';
+  if (activeHook && s.hooks) {
+    scriptText = scriptText.replace('[SPECIFIC OBSERVATION]', activeHook);
+  }
+
+  const scriptDisplay = highlightBrackets(scriptText);
+
+  let hooksHTML = '';
+  if (s.hooks && s.hooks.length) {
+    const chips = s.hooks.map(h =>
+      `<button class="hook-chip${activeHook === h.line ? ' active' : ''}" data-sid="${s.id}" data-line="${escAttr(h.line)}">${esc(h.trigger)}</button>`
+    ).join('');
+    const activeLine = activeHook
+      ? `<div class="sp-hook-active-line">"…${esc(activeHook)}"</div>`
+      : '';
+    hooksHTML = `
+      <div class="sp-hooks">
+        <div class="sp-hooks-label">Pick your hook:</div>
+        <div class="sp-hooks-row">${chips}</div>
+        ${activeLine}
+      </div>`;
+  }
+
+  const notesHTML = s.notes
+    ? `<div class="sp-section-notes">💡 ${esc(s.notes)}</div>`
+    : '';
+
+  return `
+    <div class="sp-section">
+      <button class="sp-section-header" data-sid="${s.id}">
+        <div class="sp-section-title-row">
+          <span class="sp-section-title">${esc(s.title)}</span>
+          ${s.duration ? `<span class="sp-section-dur">${esc(s.duration)}</span>` : ''}
+        </div>
+        <span class="sp-section-chev${expanded ? ' open' : ''}">▶</span>
+      </button>
+      <div class="sp-section-body${expanded ? ' open' : ''}" data-sid="${s.id}">
+        <div class="sp-section-script">${scriptDisplay}</div>
+        ${hooksHTML}
+        ${notesHTML}
+      </div>
+    </div>`;
+}
+
+function renderObjections(script, query) {
+  const list = document.getElementById('sp-obj-list');
+  const q = (query || '').toLowerCase().trim();
+  const filtered = q
+    ? script.objections.filter(o =>
+        o.objection.toLowerCase().includes(q) ||
+        o.response.toLowerCase().includes(q))
+    : script.objections;
+
+  if (!filtered.length) {
+    list.innerHTML = `<div class="sp-obj-empty">No matches for "${esc(q)}"</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((o, i) =>
+    `<div class="sp-obj-card">
+      <div class="sp-obj-q">${esc(o.objection)}</div>
+      <div class="sp-obj-a">${esc(o.response)}</div>
+      <button class="sp-obj-copy" data-text="${escAttr(o.response)}">Copy response</button>
+    </div>`
+  ).join('');
+
+  list.querySelectorAll('.sp-obj-copy').forEach(btn => {
+    btn.addEventListener('click', () => copyText(btn.dataset.text, btn));
+  });
+}
+
+function renderVoicemail(script) {
+  document.getElementById('sp-vm-text').innerHTML = highlightBrackets(script.voicemail || '');
+  const chips = document.getElementById('sp-dns-chips');
+  chips.innerHTML = (script.doNotSay || [])
+    .map(d => `<span class="sp-dns-chip">${esc(d)}</span>`)
+    .join('');
+}
+
+function highlightBrackets(text) {
+  const escaped = String(text)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return escaped.replace(/\[([^\]]+)\]/g, '<span class="placeholder">[$1]</span>');
+}
+
+function escAttr(str) {
+  return String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+async function copyText(text, btn) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+  }
+  const orig = btn.textContent;
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 1500);
+}
+
+// Toggle panel open/close
+document.getElementById('sp-toggle').addEventListener('click', e => {
+  if (e.target.closest('select')) return;
+  spOpen = !spOpen;
+  document.getElementById('sp-body').classList.toggle('open', spOpen);
+  document.getElementById('sp-chevron').classList.toggle('open', spOpen);
 });
 
-document.querySelectorAll('.script-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.script-tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.script-pane').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-  });
+document.getElementById('sp-chevron').addEventListener('click', () => {
+  spOpen = !spOpen;
+  document.getElementById('sp-body').classList.toggle('open', spOpen);
+  document.getElementById('sp-chevron').classList.toggle('open', spOpen);
 });
+
+// Voicemail button
+document.getElementById('sp-vm-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  spVmVisible = !spVmVisible;
+  document.getElementById('sp-vm-strip').style.display = spVmVisible ? 'block' : 'none';
+  document.getElementById('sp-vm-btn').classList.toggle('active', spVmVisible);
+  if (spVmVisible && !spOpen) {
+    spOpen = true;
+    document.getElementById('sp-body').classList.add('open');
+    document.getElementById('sp-chevron').classList.add('open');
+  }
+});
+
+document.getElementById('sp-close-vm').addEventListener('click', () => {
+  spVmVisible = false;
+  document.getElementById('sp-vm-strip').style.display = 'none';
+  document.getElementById('sp-vm-btn').classList.remove('active');
+});
+
+document.getElementById('sp-vm-copy').addEventListener('click', () => {
+  const script = SCRIPTS[spScriptIdx];
+  copyText(script.voicemail || '', document.getElementById('sp-vm-copy'));
+});
+
+// Objection search
+document.getElementById('sp-obj-search').addEventListener('input', e => {
+  renderObjections(SCRIPTS[spScriptIdx], e.target.value);
+});
+
+// Init on boot (called after auth loads)
+initScriptPanel();
 
 // ─────────────────────────────────────────────
 // LOGOUT
